@@ -1,28 +1,31 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.EnhancedTouch;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, ISnowAccumulation
 {
-    public float speed = 2.0f; // 動く速さの設定
+    [Header("動く速さ")]
+    [Range(0.0f, 10.0f)]
+    [SerializeField]
+    private float moveSpeed = 2.0f; // 動く速さの設定
 
     private float moveRange = 2.17f; // 動ける範囲の設定
     private float horizontalInput = 0.0f;
-    private float screenWidth = 0.0f;
+    // private float screenWidth = 0.0f;
 
     private void Awake()
     {
-        screenWidth = Screen.width;
+        moveRange = GetMoveRange();
+        // screenWidth = Screen.width;
     }
 
-    void Update()
+    private void Update()
     {
         // 現在の位置を取得
         Vector3 currentPos = transform.position;
 
         // x方向の移動量を計算
         // 1 or -1 × 速さ × 時間
-        currentPos.x += horizontalInput * speed * Time.deltaTime;
+        currentPos.x += horizontalInput * moveSpeed * Time.deltaTime;
 
         // xとの値をそれぞれ指定範囲内に収める
         // Mathf.Clamp(調整したい値,最小の値,最大の値);
@@ -45,9 +48,17 @@ public class PlayerController : MonoBehaviour
         horizontalInput = context.ReadValue<Vector2>().x;
     }
 
-    public void OnTouchInput(InputAction.CallbackContext context)
+    private float GetMoveRange()
     {
-        Debug.Log("a");
+        var cam = Camera.main;
+        var spRenderer = GetComponent<SpriteRenderer>();
+        Vector2 camRightEdge = cam.ScreenToWorldPoint(new Vector2(Screen.width, 0));
+        float spHalfWidth = spRenderer.bounds.max.x - spRenderer.bounds.center.x;
+        return camRightEdge.x - spHalfWidth;
+    }
+
+    /* public void OnTouchInput(InputAction.CallbackContext context)
+    {
         if (context.started || context.performed)
         {
             // タッチ位置を取得
@@ -68,5 +79,5 @@ public class PlayerController : MonoBehaviour
         {
             horizontalInput = 0.0f; // タッチが離れたら停止
         }
-    }
+    } */
 }
