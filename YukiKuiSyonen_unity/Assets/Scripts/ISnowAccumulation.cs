@@ -1,5 +1,5 @@
 interface ISnowAccumulation
 {
-    float AccumulatedSnow();
-    void AddSnowPoint(float snowPoint);
+    int AccumulatedSnow();
+    void AddSnowPoint(int snowPoint);
 }

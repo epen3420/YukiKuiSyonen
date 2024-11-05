@@ -3,22 +3,29 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour, ISnowAccumulation
 {
+    private float moveRange = 0.0f; // 動ける範囲の設定
+    private float horizontalInput = 0.0f;
+    // private float screenWidth = 0.0f;
+
     [Header("動く速さ")]
     [Range(0.0f, 10.0f)]
     [SerializeField]
     private float moveSpeed = 2.0f; // 動く速さの設定
 
-    private float moveRange = 2.17f; // 動ける範囲の設定
-    private float horizontalInput = 0.0f;
-    // private float screenWidth = 0.0f;
+    private int earnedPoints = 0;
+    public int AccumulatedSnow()
+    {
+        return earnedPoints;
+    }
 
-    private void Awake()
+
+    private void Start()
     {
         moveRange = GetMoveRange();
         // screenWidth = Screen.width;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // 現在の位置を取得
         Vector3 currentPos = transform.position;
@@ -55,6 +62,12 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         Vector2 camRightEdge = cam.ScreenToWorldPoint(new Vector2(Screen.width, 0));
         float spHalfWidth = spRenderer.bounds.max.x - spRenderer.bounds.center.x;
         return camRightEdge.x - spHalfWidth;
+    }
+
+    public void AddSnowPoint(int snowPoint)
+    {
+        earnedPoints += snowPoint;
+        Debug.Log($"Player earned point: {earnedPoints}");
     }
 
     /* public void OnTouchInput(InputAction.CallbackContext context)
