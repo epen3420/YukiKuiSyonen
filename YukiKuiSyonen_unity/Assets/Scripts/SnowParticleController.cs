@@ -30,6 +30,7 @@ public class SnowParticleController : MonoBehaviour
         var iSnowAccumulation = other.GetComponent<ISnowAccumulation>();
         if (iSnowAccumulation == null) return;
 
+
         iSnowAccumulation.AddSnowPoint(snowPoint);
     }
 }

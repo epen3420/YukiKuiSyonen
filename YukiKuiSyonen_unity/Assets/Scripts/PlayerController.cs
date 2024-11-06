@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,6 +8,8 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     private float horizontalInput = 0.0f;
     // private float screenWidth = 0.0f;
 
+    [SerializeField]
+    private TextMeshProUGUI text;
     [Header("動く速さ")]
     [Range(0.0f, 10.0f)]
     [SerializeField]
@@ -67,6 +70,7 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     public void AddSnowPoint(int snowPoint)
     {
         earnedPoints += snowPoint;
+        text.text = $"{earnedPoints}";
         Debug.Log($"Player earned point: {earnedPoints}");
     }
 
