@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class GroundController : MonoBehaviour, ISnowAccumulation
@@ -6,7 +7,13 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
     private float minPileUpHeight = -725.0f;
     private float pointPerPileUpSnow = 0.0f;
     private int pileUpLimiter = 0;
+    private int groundSnowCount = 0;
 
+    [SerializeField]
+    private TextMeshProUGUI text;
+    [Header("ゲームオーバー画面")]
+    [SerializeField]
+    private GameObject gameOverPanel;
     [Header("ゲームオーバーになるポイント数")]
     [SerializeField]
     private int maxPoint = 100;
@@ -16,7 +23,6 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
     [Header("積雪の画像")]
     [SerializeField]
     private RectTransform pileUpSnow;
-    private int groundSnowCount = 0;
 
     public int AccumulatedSnow()
     {
@@ -35,8 +41,8 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
     {
         if (pileUpSnow.localPosition.y >= maxPileUpHeight)
         {
-            Debug.Log("GameOver");
-            enabled = false;
+            Time.timeScale = 0;
+            gameOverPanel.SetActive(true);
         }
         else if (groundSnowCount >= pileUpLimiter)
         {
@@ -51,6 +57,16 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
             // 次の積雪基準を更新
             pileUpLimiter += increasePoints;
         }
+    }
+
+    public void ResetParameter()
+    {
+        pileUpLimiter = 0;
+        groundSnowCount = 0;
+        text.text = "0000";
+        Time.timeScale = 1;
+        pileUpSnow.position = new Vector2(pileUpSnow.position.x, minPileUpHeight);
+        gameOverPanel.SetActive(false);
     }
 
     public void AddSnowPoint(int snowPoint)
