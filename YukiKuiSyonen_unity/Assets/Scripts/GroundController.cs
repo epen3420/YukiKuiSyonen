@@ -29,11 +29,12 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
         return groundSnowCount;
     }
 
+
     private void Start()
     {
         pointPerPileUpSnow = (maxPileUpHeight - minPileUpHeight) / maxPoint;
         pileUpLimiter = pointPerPileUp;
-        pileUpSnow.localPosition = new Vector2(pileUpSnow.localPosition.x, minPileUpHeight);
+        // pileUpSnow.localPosition = new Vector2(pileUpSnow.localPosition.x, minPileUpHeight);
         Debug.Log(pointPerPileUpSnow);
     }
 
