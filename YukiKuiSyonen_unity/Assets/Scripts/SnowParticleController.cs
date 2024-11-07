@@ -27,9 +27,9 @@ public class SnowParticleController : MonoBehaviour
     } */
     private void OnParticleCollision(GameObject other)
     {
+        Debug.Log(other.name);
         var iSnowAccumulation = other.GetComponent<ISnowAccumulation>();
         if (iSnowAccumulation == null) return;
-
 
         iSnowAccumulation.AddSnowPoint(snowPoint);
     }

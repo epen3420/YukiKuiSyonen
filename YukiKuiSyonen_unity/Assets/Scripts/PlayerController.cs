@@ -4,9 +4,13 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour, ISnowAccumulation
 {
+    private Animator anim;
+    private SpriteRenderer spRenderer;
     private float moveRange = 0.0f; // 動ける範囲の設定
     private float horizontalInput = 0.0f;
     // private float screenWidth = 0.0f;
+    private string animMovingBool = "IsMoving";
+    private bool isMoving = false;
 
     [SerializeField]
     private TextMeshProUGUI text;
@@ -22,13 +26,42 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     }
 
 
-    private void Start()
+    private void Awake()
     {
+        anim = GetComponent<Animator>();
+        spRenderer = GetComponent<SpriteRenderer>();
+
         moveRange = GetMoveRange();
         // screenWidth = Screen.width;
     }
 
     private void FixedUpdate()
+    {
+        MovePlayer();
+        anim.SetBool(animMovingBool, isMoving);
+    }
+
+    public void OnHorizontalInput(InputAction.CallbackContext context)
+    {
+        // 入力状況でキャラが動いてるか検知
+        switch (context.phase)
+        {
+            case InputActionPhase.Performed:
+                isMoving = true;
+                break;
+            case InputActionPhase.Canceled:
+                isMoving = false;
+                break;
+        }
+
+        // 水平方向の入力を-1,+1で取得
+        horizontalInput = context.ReadValue<Vector2>().x;
+    }
+
+    /// <summary>
+    /// プレイヤーの移動処理
+    /// </summary>
+    private void MovePlayer()
     {
         // 現在の位置を取得
         Vector3 currentPos = transform.position;
@@ -52,17 +85,13 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         }
     }
 
-    public void OnHorizontalInput(InputAction.CallbackContext context)
-    {
-        // 水平方向の入力を-1,+1で取得
-        horizontalInput = context.ReadValue<Vector2>().x;
-    }
-
+    /// <summary>
+    ///カメラの範囲からプレイヤーの動ける範囲を設定する関数
+    /// </summary>
+    /// <returns></returns>
     private float GetMoveRange()
     {
-        var cam = Camera.main;
-        var spRenderer = GetComponent<SpriteRenderer>();
-        Vector2 camRightEdge = cam.ScreenToWorldPoint(new Vector2(Screen.width, 0));
+        Vector2 camRightEdge = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0));
         float spHalfWidth = spRenderer.bounds.max.x - spRenderer.bounds.center.x;
         return camRightEdge.x - spHalfWidth;
     }
