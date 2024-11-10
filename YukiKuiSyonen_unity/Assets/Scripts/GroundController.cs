@@ -1,0 +1,68 @@
+using UnityEngine;
+
+public class GroundController : MonoBehaviour, ISnowAccumulation
+{
+    private float maxPileUpHeight = -540.0f;
+    private float minPileUpHeight = -725.0f;
+    private Vector2 initPos = new Vector2(0.0f, -725.0f);
+    private float pointPerPileUpSnow = 0.0f;
+    private int pileUpLimiter = 0;
+    private int groundSnowCount = 0;
+    private bool isGameOver = false;
+    public bool IsGameOver
+    {
+        get { return isGameOver; }
+    }
+
+    [SerializeField]
+    private PlayerController playerController;
+    [Header("ゲームオーバーになるポイント数")]
+    [SerializeField]
+    private int maxPoint = 100;
+    [Header("積もるポイントの頻度")]
+    [SerializeField]
+    private int pointPerPileUp = 10;
+
+
+    private void Start()
+    {
+        pointPerPileUpSnow = (maxPileUpHeight - minPileUpHeight) / maxPoint;
+        pileUpLimiter = pointPerPileUp;
+    }
+
+    private void UpdatePileUp(int increasePoints)
+    {
+        if (pointPerPileUp > pileUpLimiter) return;
+
+        // 雪の画像を上に移動させる量を計算
+        float pileUpSnowAmount = pointPerPileUpSnow * increasePoints;
+        float newSnowPosition = Mathf.Clamp(transform.localPosition.y + pileUpSnowAmount, minPileUpHeight, maxPileUpHeight);
+
+        // 雪の画像の位置を更新
+        transform.localPosition = new Vector2(transform.localPosition.x, newSnowPosition);
+
+        // 次の積雪基準を更新
+        pileUpLimiter += increasePoints;
+    }
+
+    public void ResetParameter()
+    {
+        isGameOver = false;
+        pileUpLimiter = pointPerPileUp;
+        groundSnowCount = 0;
+        transform.localPosition = initPos;
+    }
+
+    public void AddSnowPoint(int snowPoint)
+    {
+        groundSnowCount += snowPoint;
+        UpdatePileUp(snowPoint);
+        float slowSpeed = (float)snowPoint / maxPoint;
+        playerController.SlowSpeed(slowSpeed);
+        if (maxPoint <= groundSnowCount)
+        {
+            isGameOver = true;
+        }
+        Debug.Log($"Ground snow count: {groundSnowCount}");
+    }
+}
