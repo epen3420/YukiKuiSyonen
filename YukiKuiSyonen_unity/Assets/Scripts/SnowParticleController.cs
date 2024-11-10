@@ -2,9 +2,17 @@ using UnityEngine;
 
 public class SnowParticleController : MonoBehaviour
 {
+    private ParticleSystem particle;
+
     [Header("雪が与えるポイント数")]
     [SerializeField]
     private int snowPoint = 1;
+
+
+    private void Awake()
+    {
+        particle = GetComponent<ParticleSystem>();
+    }
     // public int SnowPoint { get; private set; }
 
     /*[SerializeField]
@@ -25,9 +33,23 @@ public class SnowParticleController : MonoBehaviour
         var main = particle.main;
         main.startSize = size;
     } */
+    public void StartParticle()
+    {
+        particle.Play();
+    }
+
+    public void PauseParticle()
+    {
+        particle.Pause();
+    }
+
+    public void StopParticle()
+    {
+        particle.Stop();
+    }
+
     private void OnParticleCollision(GameObject other)
     {
-        Debug.Log(other.name);
         var iSnowAccumulation = other.GetComponent<ISnowAccumulation>();
         if (iSnowAccumulation == null) return;
 

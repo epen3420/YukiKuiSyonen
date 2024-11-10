@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,22 +7,16 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     private SpriteRenderer spRenderer;
     private float moveRange = 0.0f; // 動ける範囲の設定
     private float horizontalInput = 0.0f;
-    // private float screenWidth = 0.0f;
-    private string animMovingBool = "IsMoving";
-    private bool isMoving = false;
+    private int earnedPoints = 0;
+    private Vector2 initPos = new Vector2(-2.0f, -2.88f);
 
     [SerializeField]
-    private TextMeshProUGUI text;
+    private UIManager uIManager;
     [Header("動く速さ")]
     [Range(0.0f, 10.0f)]
     [SerializeField]
     private float moveSpeed = 2.0f; // 動く速さの設定
 
-    private int earnedPoints = 0;
-    public int AccumulatedSnow()
-    {
-        return earnedPoints;
-    }
 
 
     private void Awake()
@@ -32,25 +25,34 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         spRenderer = GetComponent<SpriteRenderer>();
 
         moveRange = GetMoveRange();
-        // screenWidth = Screen.width;
     }
 
     private void FixedUpdate()
     {
         MovePlayer();
-        anim.SetBool(animMovingBool, isMoving);
+    }
+
+    public void FrontAnim(bool isFront)
+    {
+        anim.SetBool("IsStanding", isFront);
+    }
+
+    public void MoveAnim(bool isMove)
+    {
+        anim.SetBool("IsMoving", isMove);
     }
 
     public void OnHorizontalInput(InputAction.CallbackContext context)
     {
+        if (enabled == false) return;
         // 入力状況でキャラが動いてるか検知
         switch (context.phase)
         {
             case InputActionPhase.Performed:
-                isMoving = true;
+                MoveAnim(true);
                 break;
             case InputActionPhase.Canceled:
-                isMoving = false;
+                MoveAnim(false);
                 break;
         }
 
@@ -96,10 +98,24 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         return camRightEdge.x - spHalfWidth;
     }
 
+    public void ResetParameter()
+    {
+        MoveAnim(false);
+        moveSpeed = 2.0f;
+        earnedPoints = 0;
+        transform.position = initPos;
+    }
+
+    public void SlowSpeed(float slow)
+    {
+        moveSpeed -= slow;
+        Debug.Log(slow);
+    }
+
     public void AddSnowPoint(int snowPoint)
     {
         earnedPoints += snowPoint;
-        text.text = $"{earnedPoints}";
+        uIManager.ReflectCount(earnedPoints);
         Debug.Log($"Player earned point: {earnedPoints}");
     }
 

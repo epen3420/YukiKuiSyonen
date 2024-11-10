@@ -1,79 +1,68 @@
-using TMPro;
 using UnityEngine;
 
 public class GroundController : MonoBehaviour, ISnowAccumulation
 {
     private float maxPileUpHeight = -540.0f;
     private float minPileUpHeight = -725.0f;
+    private Vector2 initPos = new Vector2(0.0f, -725.0f);
     private float pointPerPileUpSnow = 0.0f;
     private int pileUpLimiter = 0;
     private int groundSnowCount = 0;
+    private bool isGameOver = false;
+    public bool IsGameOver
+    {
+        get { return isGameOver; }
+    }
 
     [SerializeField]
-    private TextMeshProUGUI text;
-    [Header("ゲームオーバー画面")]
-    [SerializeField]
-    private GameObject gameOverPanel;
+    private PlayerController playerController;
     [Header("ゲームオーバーになるポイント数")]
     [SerializeField]
     private int maxPoint = 100;
     [Header("積もるポイントの頻度")]
     [SerializeField]
     private int pointPerPileUp = 10;
-    [Header("積雪の画像")]
-    [SerializeField]
-    private RectTransform pileUpSnow;
-
-    public int AccumulatedSnow()
-    {
-        return groundSnowCount;
-    }
 
 
     private void Start()
     {
         pointPerPileUpSnow = (maxPileUpHeight - minPileUpHeight) / maxPoint;
         pileUpLimiter = pointPerPileUp;
-        // pileUpSnow.localPosition = new Vector2(pileUpSnow.localPosition.x, minPileUpHeight);
-        Debug.Log(pointPerPileUpSnow);
     }
 
     private void UpdatePileUp(int increasePoints)
     {
-        if (pileUpSnow.localPosition.y >= maxPileUpHeight)
-        {
-            Time.timeScale = 0;
-            gameOverPanel.SetActive(true);
-        }
-        else if (groundSnowCount >= pileUpLimiter)
-        {
-            // 雪の画像を上に移動させる量を計算
-            float pileUpSnowAmount = pointPerPileUpSnow * increasePoints;
-            float newSnowPosition = Mathf.Clamp(pileUpSnow.localPosition.y + pileUpSnowAmount, minPileUpHeight, maxPileUpHeight);
+        if (pointPerPileUp > pileUpLimiter) return;
 
-            // 雪の画像の位置を更新
-            pileUpSnow.localPosition = new Vector2(pileUpSnow.localPosition.x, newSnowPosition);
-            Debug.Log($"Updated Snow Position: {pileUpSnow.localPosition}");
+        // 雪の画像を上に移動させる量を計算
+        float pileUpSnowAmount = pointPerPileUpSnow * increasePoints;
+        float newSnowPosition = Mathf.Clamp(transform.localPosition.y + pileUpSnowAmount, minPileUpHeight, maxPileUpHeight);
 
-            // 次の積雪基準を更新
-            pileUpLimiter += increasePoints;
-        }
+        // 雪の画像の位置を更新
+        transform.localPosition = new Vector2(transform.localPosition.x, newSnowPosition);
+
+        // 次の積雪基準を更新
+        pileUpLimiter += increasePoints;
     }
 
     public void ResetParameter()
     {
-        pileUpLimiter = 0;
+        isGameOver = false;
+        pileUpLimiter = pointPerPileUp;
         groundSnowCount = 0;
-        text.text = "0000";
-        Time.timeScale = 1;
-        pileUpSnow.position = new Vector2(pileUpSnow.position.x, minPileUpHeight);
-        gameOverPanel.SetActive(false);
+        transform.localPosition = initPos;
     }
 
     public void AddSnowPoint(int snowPoint)
     {
         groundSnowCount += snowPoint;
         UpdatePileUp(snowPoint);
+        float slowSpeed = (float)snowPoint / maxPoint;
+        playerController.SlowSpeed(slowSpeed);
+        if (maxPoint <= groundSnowCount)
+        {
+            isGameOver = true;
+        }
         Debug.Log($"Ground snow count: {groundSnowCount}");
     }
 }
