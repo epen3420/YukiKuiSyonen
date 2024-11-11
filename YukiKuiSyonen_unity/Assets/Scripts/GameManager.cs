@@ -79,15 +79,14 @@ public class GameManager : MonoBehaviour
 
     private void EnableGame()
     {
-        snowParticleController.StartParticle();
+        snowParticleController.gameObject.SetActive(true);
         playerController.FrontAnim(false);
         playerController.enabled = true;
     }
 
     private void DisableGame()
     {
-        snowParticleController.PauseParticle();
-        snowParticleController.StopParticle();
+        snowParticleController.gameObject.SetActive(false);
         playerController.MoveAnim(false);
         playerController.FrontAnim(true);
         playerController.enabled = false;

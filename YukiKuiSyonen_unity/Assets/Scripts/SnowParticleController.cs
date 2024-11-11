@@ -33,21 +33,6 @@ public class SnowParticleController : MonoBehaviour
         var main = particle.main;
         main.startSize = size;
     } */
-    public void StartParticle()
-    {
-        particle.Play();
-    }
-
-    public void PauseParticle()
-    {
-        particle.Pause();
-    }
-
-    public void StopParticle()
-    {
-        particle.Stop();
-    }
-
     private void OnParticleCollision(GameObject other)
     {
         var iSnowAccumulation = other.GetComponent<ISnowAccumulation>();

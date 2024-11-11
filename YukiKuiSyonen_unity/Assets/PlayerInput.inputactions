@@ -16,9 +16,9 @@
                 },
                 {
                     "name": "MoveTouch",
-                    "type": "PassThrough",
+                    "type": "Button",
                     "id": "ba86286e-03c8-47e0-a746-1316ecc60734",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -94,7 +94,7 @@
                 {
                     "name": "",
                     "id": "d83f67a5-2573-49ac-b630-7aac316c23c4",
-                    "path": "<Touchscreen>/position",
+                    "path": "<Pointer>/press",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
