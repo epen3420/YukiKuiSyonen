@@ -97,7 +97,7 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         horizontalInput = context.ReadValue<Vector2>().x;
     }
 
-    public void OnTouch(InputAction.CallbackContext context)
+    /* public void OnTouch(InputAction.CallbackContext context)
     {
         if (!enabled) return;
 
@@ -136,6 +136,55 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
             {
                 horizontalInput = -1;  // 左側タッチ
             }
+        }
+    } */
+
+    private void Update()
+    {
+        if (!enabled) return;
+
+        // タッチまたはマウス入力の処理
+        if (Input.touchCount > 0) // タッチが検出された場合
+        {
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == UnityEngine.TouchPhase.Began || touch.phase == UnityEngine.TouchPhase.Moved)
+            {
+                MoveAnim(true);
+                Vector2 touchPosition = touch.position;
+
+                if (touchPosition.x > Screen.width / 2)
+                {
+                    horizontalInput = 1; // 右側タッチ
+                }
+                else
+                {
+                    horizontalInput = -1; // 左側タッチ
+                }
+            }
+            else if (touch.phase == UnityEngine.TouchPhase.Ended)
+            {
+                MoveAnim(false);
+                horizontalInput = 0; // タッチ終了時にリセット
+            }
+        }
+        else if (Input.GetMouseButton(0)) // マウスがクリックされている場合
+        {
+            MoveAnim(true);
+            Vector2 mousePosition = Input.mousePosition;
+
+            if (mousePosition.x > Screen.width / 2)
+            {
+                horizontalInput = 1; // 右側クリック
+            }
+            else
+            {
+                horizontalInput = -1; // 左側クリック
+            }
+        }
+        else if (Input.GetMouseButtonUp(0)) // マウスのクリックが終了した場合
+        {
+            MoveAnim(false);
+            horizontalInput = 0; // クリック終了時にリセット
         }
     }
 }
