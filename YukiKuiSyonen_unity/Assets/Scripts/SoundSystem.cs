@@ -21,6 +21,9 @@ public enum SoundType
 
 public class SoundSystem : MonoBehaviour
 {
+    public static SoundSystem instance;
+
+
     [SerializeField]
     private List<SoundData> soundDataList;
 
@@ -54,7 +57,17 @@ public class SoundSystem : MonoBehaviour
 
     private void Awake()
     {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         InitializeSoundDataDictionary();
+
         InitializeAudioSources();
     }
 
@@ -85,7 +98,14 @@ public class SoundSystem : MonoBehaviour
             var audioSource = audioSources[soundData.soundType];
             audioSource.clip = soundData.audioClip;
             SetVolume(audioSource, soundData);
-            audioSource.Play();
+            if (soundData.soundType == SoundType.BGM)
+            {
+                audioSource.Play();
+            }
+            else
+            {
+                audioSource.PlayOneShot(soundData.audioClip);
+            }
         }
     }
 

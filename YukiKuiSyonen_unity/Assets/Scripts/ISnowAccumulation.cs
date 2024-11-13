@@ -4,5 +4,5 @@ interface ISnowAccumulation
     /// 雪のポイントを増やす
     /// </summary>
     /// <param name="snowPoint"></param>
-    void AddSnowPoint(int snowPoint);
+    void AddSnowPoint(int playerPoints, int groundPoints);
 }

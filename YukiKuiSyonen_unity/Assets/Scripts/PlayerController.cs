@@ -71,9 +71,9 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         Debug.Log(slow);
     }
 
-    public void AddSnowPoint(int snowPoint)
+    public void AddSnowPoint(int playerPoint, int groundPoint)
     {
-        earnedPoints += snowPoint;
+        earnedPoints += playerPoint;
         GameManager.instance.playerScore = earnedPoints;
         Debug.Log($"Player earned point: {earnedPoints}");
     }
@@ -93,6 +93,18 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         }
 
         horizontalInput = context.ReadValue<Vector2>().x;
+    }
+
+    private void FootStepSound()
+    {
+        if (GameManager.instance.groundScore > 0)
+        {
+            SoundSystem.instance.PlaySound("WalkSnow");
+        }
+        else
+        {
+            SoundSystem.instance.PlaySound("WalkGround");
+        }
     }
 
     /* public void OnTouch(InputAction.CallbackContext context)

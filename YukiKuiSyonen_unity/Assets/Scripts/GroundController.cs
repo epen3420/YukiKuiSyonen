@@ -53,11 +53,13 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
         transform.localPosition = initPos;
     }
 
-    public void AddSnowPoint(int snowPoint)
+    public void AddSnowPoint(int playerPoint, int groundPoint)
     {
-        groundSnowCount += snowPoint;
-        UpdatePileUp(snowPoint);
-        float slowSpeed = (float)snowPoint / maxPoint;
+        SoundSystem.instance.PlaySound("HitGround");
+        groundSnowCount += groundPoint;
+        GameManager.instance.groundScore = groundSnowCount;
+        UpdatePileUp(groundPoint);
+        float slowSpeed = (float)groundPoint / maxPoint;
         playerController.SlowSpeed(slowSpeed);
         if (maxPoint <= groundSnowCount)
         {

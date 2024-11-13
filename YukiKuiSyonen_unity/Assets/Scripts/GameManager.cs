@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            DontDestroyOnLoad(this.gameObject);
         }
         else
         {
@@ -19,7 +20,10 @@ public class GameManager : MonoBehaviour
     }
 
     public int playerScore = 0;
+    public int groundScore = 0;
 
+    [SerializeField]
+    private GameObject randomGenerator;
     [SerializeField]
     private SnowParticleController snowParticleController;
     [SerializeField]
@@ -32,6 +36,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        SoundSystem.instance.PlaySound("Yuki");
         uIManager.StartScreen(true);
         DisableGame();
     }
@@ -87,9 +92,11 @@ public class GameManager : MonoBehaviour
 
     private void InitGame()
     {
+        SoundSystem.instance.PlaySound("aiu");
         groundController.ResetParameter();
         playerController.ResetParameter();
         playerScore = 0;
+        groundScore = 0;
         uIManager.ReflectCount(0);
     }
 
@@ -100,6 +107,7 @@ public class GameManager : MonoBehaviour
 
     private void EnableGame()
     {
+        randomGenerator.SetActive(true);
         snowParticleController.gameObject.SetActive(true);
         playerController.FrontAnim(false);
         playerController.enabled = true;
@@ -107,6 +115,7 @@ public class GameManager : MonoBehaviour
 
     private void DisableGame()
     {
+        randomGenerator.SetActive(false);
         snowParticleController.gameObject.SetActive(false);
         playerController.MoveAnim(false);
         playerController.FrontAnim(true);
