@@ -4,14 +4,11 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour, ISnowAccumulation
 {
     private Animator anim;
-    private SpriteRenderer spRenderer;
     private float moveRange = 0.0f;
     private float horizontalInput = 0.0f;
     private int earnedPoints = 0;
     private Vector2 initPos = new Vector2(-2.0f, -2.88f);
 
-    [SerializeField]
-    private UIManager uIManager;
     [Header("動く速さ")]
     [Range(0.0f, 10.0f)]
     [SerializeField]
@@ -20,7 +17,6 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     private void Awake()
     {
         anim = GetComponent<Animator>();
-        spRenderer = GetComponent<SpriteRenderer>();
         moveRange = GetMoveRange();
     }
 
@@ -65,6 +61,7 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         MoveAnim(false);
         moveSpeed = 2.0f;
         earnedPoints = 0;
+        horizontalInput = 0;
         transform.position = initPos;
     }
 

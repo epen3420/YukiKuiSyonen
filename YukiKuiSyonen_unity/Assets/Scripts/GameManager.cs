@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator GameEnding()
     {
         uIManager.EndScreen(true);
-        UnityroomApiClient.Instance.SendScore(1, (float)playerScore, ScoreboardWriteMode.Always);
+        UnityroomApiClient.Instance.SendScore(1, (float)playerScore, ScoreboardWriteMode.HighScoreDesc);
         DisableGame();
 
         yield return null;
@@ -89,6 +89,7 @@ public class GameManager : MonoBehaviour
     {
         groundController.ResetParameter();
         playerController.ResetParameter();
+        playerScore = 0;
         uIManager.ReflectCount(0);
     }
 
