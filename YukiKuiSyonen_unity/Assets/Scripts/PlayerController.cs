@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     public void AddSnowPoint(int snowPoint)
     {
         earnedPoints += snowPoint;
-        uIManager.ReflectCount(earnedPoints);
+        GameManager.instance.playerScore = earnedPoints;
         Debug.Log($"Player earned point: {earnedPoints}");
     }
 

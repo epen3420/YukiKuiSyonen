@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -14,6 +15,10 @@ public class UIManager : MonoBehaviour
     private TextMeshProUGUI countDownText;
     [SerializeField]
     private TextMeshProUGUI pointsCountText;
+    [SerializeField]
+    private TMP_InputField inputField;
+    [SerializeField]
+    private TextMeshProUGUI userNameText;
 
 
     public void StartScreen(bool isScreen)
@@ -24,6 +29,12 @@ public class UIManager : MonoBehaviour
     public void EndScreen(bool isScreen)
     {
         endPanel.SetActive(isScreen);
+    }
+
+    public void SetUserName()
+    {
+        string userName = inputField.text;
+        userNameText.text = userName;
     }
 
     public void ReflectCount(int points)

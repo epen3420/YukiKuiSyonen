@@ -1,8 +1,25 @@
 using System.Collections;
 using UnityEngine;
+using unityroom.Api;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public int playerScore = 0;
+
     [SerializeField]
     private SnowParticleController snowParticleController;
     [SerializeField]
@@ -11,6 +28,7 @@ public class GameManager : MonoBehaviour
     private GroundController groundController;
     [SerializeField]
     private UIManager uIManager;
+
 
     private void Start()
     {
@@ -53,6 +71,7 @@ public class GameManager : MonoBehaviour
 
         while (!IsGameOver())
         {
+            uIManager.ReflectCount(playerScore);
             yield return null;
         }
     }
@@ -60,6 +79,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator GameEnding()
     {
         uIManager.EndScreen(true);
+        UnityroomApiClient.Instance.SendScore(1, (float)playerScore, ScoreboardWriteMode.Always);
         DisableGame();
 
         yield return null;
