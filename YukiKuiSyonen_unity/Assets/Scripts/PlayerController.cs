@@ -55,7 +55,8 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     private float GetMoveRange()
     {
         Vector2 camRightEdge = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0));
-        float spHalfWidth = spRenderer.bounds.max.x - spRenderer.bounds.center.x;
+        // float spHalfWidth = spRenderer.bounds.max.x - spRenderer.bounds.center.x;
+        float spHalfWidth = 0;
         return camRightEdge.x - spHalfWidth;
     }
 
