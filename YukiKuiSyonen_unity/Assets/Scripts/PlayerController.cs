@@ -38,47 +38,14 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         }
     }
 
-    public void FrontAnim(bool isFront)
-    {
-        anim.SetBool("IsStanding", isFront);
-    }
-
-    public void MoveAnim(bool isMove)
-    {
-        anim.SetBool("IsMoving", isMove);
-    }
-
     private float GetMoveRange()
     {
         Vector2 camRightEdge = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0));
-        // float spHalfWidth = spRenderer.bounds.max.x - spRenderer.bounds.center.x;
         float spHalfWidth = 0;
         return camRightEdge.x - spHalfWidth;
     }
 
-    public void ResetParameter()
-    {
-        MoveAnim(false);
-        moveSpeed = 2.0f;
-        earnedPoints = 0;
-        horizontalInput = 0;
-        transform.position = initPos;
-    }
-
-    public void SlowSpeed(float slow)
-    {
-        moveSpeed -= slow;
-        Debug.Log(slow);
-    }
-
-    public void AddSnowPoint(int playerPoint, int groundPoint)
-    {
-        earnedPoints += playerPoint;
-        GameManager.instance.playerScore = earnedPoints;
-        Debug.Log($"Player earned point: {earnedPoints}");
-    }
-
-    public void OnHorizontalInput(InputAction.CallbackContext context)
+    public void OnKeyDown(InputAction.CallbackContext context)
     {
         if (enabled == false) return;
 
@@ -95,6 +62,42 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         horizontalInput = context.ReadValue<Vector2>().x;
     }
 
+    // Input SystemでのMoveアクションイベントを使用して水平方向の入力を処理
+    public void OnDrag(InputAction.CallbackContext context)
+    {
+        if (!enabled) return;
+
+        if (context.phase == InputActionPhase.Performed)
+        {
+            MoveAnim(true);
+            Vector2 touchPosition = context.ReadValue<Vector2>();
+
+            if (touchPosition.x > Screen.width / 2)
+            {
+                horizontalInput = 1; // 右側入力
+            }
+            else
+            {
+                horizontalInput = -1; // 左側入力
+            }
+        }
+        else if (context.phase == InputActionPhase.Canceled)
+        {
+            MoveAnim(false);
+            horizontalInput = 0; // 入力終了時にリセット
+        }
+    }
+
+    public void FrontAnim(bool isFront)
+    {
+        anim.SetBool("IsStanding", isFront);
+    }
+
+    public void MoveAnim(bool isMove)
+    {
+        anim.SetBool("IsMoving", isMove);
+    }
+
     private void FootStepSound()
     {
         if (GameManager.instance.groundScore > 0)
@@ -107,94 +110,21 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         }
     }
 
-    /* public void OnTouch(InputAction.CallbackContext context)
+    public void AddSnowPoint(int playerPoint, int groundPoint)
     {
-        if (!enabled) return;
+        earnedPoints += playerPoint;
+        float slowSpeed = (float)groundPoint / GameManager.instance.maxPoint;
+        moveSpeed -= slowSpeed;
+        GameManager.instance.playerScore = earnedPoints;
+        Debug.Log($"Player earned point: {earnedPoints}");
+    }
 
-        // 入力状況でキャラが動いているか検知
-        switch (context.phase)
-        {
-            case InputActionPhase.Performed:
-                MoveAnim(true);
-                break;
-            case InputActionPhase.Canceled:
-                MoveAnim(false);
-                horizontalInput = 0;  // タッチが終了したら入力をリセット
-                return;
-        }
-
-        // タッチまたはクリック位置を取得
-        Vector2 pointerPosition = Vector2.zero;
-
-        if (Touchscreen.current != null && Touchscreen.current.touches.Count > 0)
-        {
-            pointerPosition = Touchscreen.current.touches[0].position.ReadValue();
-        }
-        else if (Mouse.current != null)
-        {
-            pointerPosition = Mouse.current.position.ReadValue();
-        }
-
-        // タッチ位置の確認
-        if (context.performed)
-        {
-            if (pointerPosition.x > Screen.width / 2)
-            {
-                horizontalInput = +1;  // 右側タッチ
-            }
-            else
-            {
-                horizontalInput = -1;  // 左側タッチ
-            }
-        }
-    } */
-
-    private void Update()
+    public void ResetParameter()
     {
-        if (!enabled) return;
-
-        // タッチまたはマウス入力の処理
-        if (Input.touchCount > 0) // タッチが検出された場合
-        {
-            Touch touch = Input.GetTouch(0);
-            if (touch.phase == UnityEngine.TouchPhase.Began || touch.phase == UnityEngine.TouchPhase.Moved)
-            {
-                MoveAnim(true);
-                Vector2 touchPosition = touch.position;
-
-                if (touchPosition.x > Screen.width / 2)
-                {
-                    horizontalInput = 1; // 右側タッチ
-                }
-                else
-                {
-                    horizontalInput = -1; // 左側タッチ
-                }
-            }
-            else if (touch.phase == UnityEngine.TouchPhase.Ended)
-            {
-                MoveAnim(false);
-                horizontalInput = 0; // タッチ終了時にリセット
-            }
-        }
-        else if (Input.GetMouseButton(0)) // マウスがクリックされている場合
-        {
-            MoveAnim(true);
-            Vector2 mousePosition = Input.mousePosition;
-
-            if (mousePosition.x > Screen.width / 2)
-            {
-                horizontalInput = 1; // 右側クリック
-            }
-            else
-            {
-                horizontalInput = -1; // 左側クリック
-            }
-        }
-        else if (Input.GetMouseButtonUp(0)) // マウスのクリックが終了した場合
-        {
-            MoveAnim(false);
-            horizontalInput = 0; // クリック終了時にリセット
-        }
+        MoveAnim(false);
+        moveSpeed = 2.0f;
+        earnedPoints = 0;
+        horizontalInput = 0;
+        transform.position = initPos;
     }
 }

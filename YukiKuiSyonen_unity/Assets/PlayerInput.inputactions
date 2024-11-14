@@ -6,7 +6,7 @@
             "id": "269e08cf-360d-4566-9049-428ff1289e06",
             "actions": [
                 {
-                    "name": "Move",
+                    "name": "KeyMove",
                     "type": "Value",
                     "id": "5a0ec3ec-b342-4731-ac03-84c1853c8332",
                     "expectedControlType": "Vector2",
@@ -15,13 +15,13 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "MoveTouch",
-                    "type": "Button",
+                    "name": "DragMove",
+                    "type": "Value",
                     "id": "ba86286e-03c8-47e0-a746-1316ecc60734",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -32,7 +32,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "Move",
+                    "action": "KeyMove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -43,7 +43,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move",
+                    "action": "KeyMove",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -54,7 +54,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "KeyMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -65,7 +65,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "KeyMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -76,7 +76,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "KeyMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -87,20 +87,75 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Move",
+                    "action": "KeyMove",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "",
-                    "id": "d83f67a5-2573-49ac-b630-7aac316c23c4",
+                    "name": "Pointer",
+                    "id": "8e63c945-3bf0-4ab7-bcad-08927bf45d5f",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DragMove",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "8f1f437d-6e7e-428c-bb1d-4732525e51dd",
                     "path": "<Pointer>/press",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MoveTouch",
+                    "action": "DragMove",
                     "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "b9c2a9eb-3601-49b6-ac56-ddb5e0800466",
+                    "path": "<Pointer>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DragMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Mouse",
+                    "id": "bb445b95-e02c-4df9-becf-4d8705f9d1ec",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DragMove",
+                    "isComposite": true,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "ad4da204-95e8-426d-bcb5-f1eeeb0dfded",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DragMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "096ca671-f99b-4f30-96bb-6151733b75da",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DragMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },

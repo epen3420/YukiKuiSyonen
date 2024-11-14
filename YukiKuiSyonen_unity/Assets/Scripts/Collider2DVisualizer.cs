@@ -6,6 +6,7 @@ public class Collider2DVisualizer : MonoBehaviour
     [SerializeField]
     private Color gizmoColor = Color.green; // コライダーの範囲の色
 
+
     void OnDrawGizmos()
     {
         Gizmos.color = gizmoColor;

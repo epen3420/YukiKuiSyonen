@@ -19,13 +19,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int maxPoint = 100;
     public int playerScore = 0;
     public int groundScore = 0;
 
     [SerializeField]
-    private GameObject randomGenerator;
-    [SerializeField]
-    private SnowParticleController snowParticleController;
+    private SnowParticlesManager snowParticlesManager;
     [SerializeField]
     private PlayerController playerController;
     [SerializeField]
@@ -40,6 +39,8 @@ public class GameManager : MonoBehaviour
         uIManager.StartScreen(true);
         DisableGame();
     }
+
+
 
     public void ButtonGameStart()
     {
@@ -102,21 +103,20 @@ public class GameManager : MonoBehaviour
 
     private bool IsGameOver()
     {
-        return groundController.IsGameOver;
+        return groundController.IsPiledUp;
     }
 
     private void EnableGame()
     {
-        randomGenerator.SetActive(true);
-        snowParticleController.gameObject.SetActive(true);
+        snowParticlesManager.gameObject.SetActive(false);
+        snowParticlesManager.gameObject.SetActive(true);
         playerController.FrontAnim(false);
         playerController.enabled = true;
     }
 
     private void DisableGame()
     {
-        randomGenerator.SetActive(false);
-        snowParticleController.gameObject.SetActive(false);
+        snowParticlesManager.PauseParticles();
         playerController.MoveAnim(false);
         playerController.FrontAnim(true);
         playerController.enabled = false;

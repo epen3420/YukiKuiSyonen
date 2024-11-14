@@ -8,17 +8,12 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
     private float pointPerPileUpSnow = 0.0f;
     private int pileUpLimiter = 0;
     private int groundSnowCount = 0;
-    private bool isGameOver = false;
-    public bool IsGameOver
+    private bool isPiledUp = false;
+    public bool IsPiledUp
     {
-        get { return isGameOver; }
+        get { return isPiledUp; }
     }
 
-    [SerializeField]
-    private PlayerController playerController;
-    [Header("ゲームオーバーになるポイント数")]
-    [SerializeField]
-    private int maxPoint = 100;
     [Header("積もるポイントの頻度")]
     [SerializeField]
     private int pointPerPileUp = 10;
@@ -26,7 +21,7 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
 
     private void Start()
     {
-        pointPerPileUpSnow = (maxPileUpHeight - minPileUpHeight) / maxPoint;
+        pointPerPileUpSnow = (maxPileUpHeight - minPileUpHeight) / GameManager.instance.maxPoint;
         pileUpLimiter = pointPerPileUp;
     }
 
@@ -45,26 +40,25 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
         pileUpLimiter += increasePoints;
     }
 
-    public void ResetParameter()
-    {
-        isGameOver = false;
-        pileUpLimiter = pointPerPileUp;
-        groundSnowCount = 0;
-        transform.localPosition = initPos;
-    }
-
     public void AddSnowPoint(int playerPoint, int groundPoint)
     {
         SoundSystem.instance.PlaySound("HitGround");
         groundSnowCount += groundPoint;
         GameManager.instance.groundScore = groundSnowCount;
         UpdatePileUp(groundPoint);
-        float slowSpeed = (float)groundPoint / maxPoint;
-        playerController.SlowSpeed(slowSpeed);
-        if (maxPoint <= groundSnowCount)
+
+        if (GameManager.instance.maxPoint <= groundSnowCount)
         {
-            isGameOver = true;
+            isPiledUp = true;
         }
         Debug.Log($"Ground snow count: {groundSnowCount}");
+    }
+
+    public void ResetParameter()
+    {
+        isPiledUp = false;
+        pileUpLimiter = pointPerPileUp;
+        groundSnowCount = 0;
+        transform.localPosition = initPos;
     }
 }

@@ -4,9 +4,9 @@ public class AspectKeeper : MonoBehaviour
 {
     [SerializeField]
     private Camera targetCamera; //対象とするカメラ
-
     [SerializeField]
     private Vector2 aspectVec; //目的解像度
+
 
     void Update()
     {
