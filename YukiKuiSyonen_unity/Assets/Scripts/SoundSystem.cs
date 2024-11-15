@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,19 +6,11 @@ public class SoundSystem : MonoBehaviour
 {
     public static SoundSystem instance;
 
-
     [SerializeField]
     private List<SoundData> soundDataList;
 
-    [SerializeField]
-    private AudioSource bgmAudioSource;
-    [SerializeField]
-    private AudioSource seAudioSource;
-    [SerializeField]
-    private AudioSource voiceAudioSource;
-
     private Dictionary<string, SoundData> soundDataDict;
-    private Dictionary<SoundType, AudioSource> audioSources;
+    private Queue<AudioSource> audioSourcePool;
 
     [Header("主音量")]
     [Range(0, 1)]
@@ -43,77 +35,73 @@ public class SoundSystem : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(this.gameObject);
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
         }
-        InitializeSoundDataDictionary();
 
-        InitializeAudioSources();
+        InitializeSoundDataDictionary();
+        InitializeAudioSourcePool(10); // 初期プールサイズ
     }
 
     private void InitializeSoundDataDictionary()
     {
         soundDataDict = new Dictionary<string, SoundData>();
         foreach (var soundData in soundDataList)
-        {
-            if (!soundDataDict.ContainsKey(soundData.title))
-                soundDataDict.Add(soundData.title, soundData);
-        }
+            soundDataDict[soundData.title] = soundData;
     }
 
-    private void InitializeAudioSources()
+    private void InitializeAudioSourcePool(int initialSize)
     {
-        audioSources = new Dictionary<SoundType, AudioSource>
-        {
-            { SoundType.BGM, bgmAudioSource },
-            { SoundType.SE, seAudioSource },
-            { SoundType.Voice, voiceAudioSource }
-        };
+        audioSourcePool = new Queue<AudioSource>();
+        for (int i = 0; i < initialSize; i++)
+            audioSourcePool.Enqueue(CreateAudioSource());
     }
 
     public void PlaySound(string title)
     {
         if (soundDataDict.TryGetValue(title, out var soundData))
         {
-            var audioSource = audioSources[soundData.soundType];
+            var audioSource = GetOrCreateAudioSource();
             audioSource.clip = soundData.audioClip;
+            audioSource.loop = soundData.soundType == SoundType.BGM;
             SetVolume(audioSource, soundData);
-            if (soundData.soundType == SoundType.BGM)
-            {
+
+            if (audioSource.loop)
                 audioSource.Play();
-            }
             else
-            {
-                audioSource.PlayOneShot(soundData.audioClip);
-            }
+                StartCoroutine(PlayAndRecycle(audioSource, soundData.audioClip.length));
         }
     }
 
-    public void AdjustMasterVolume(float newValue)
+    private AudioSource CreateAudioSource()
     {
-        masterVolume = newValue;
-        UpdateVolumes();
+        var audioSourceObject = new GameObject("PooledAudioSource");
+        audioSourceObject.transform.SetParent(transform);
+        return audioSourceObject.AddComponent<AudioSource>();
     }
 
-    public void AdjustBgmVolume(float newValue)
+    private AudioSource GetOrCreateAudioSource()
     {
-        bgmVolume = newValue;
-        UpdateVolume(SoundType.BGM);
+        if (audioSourcePool.Count > 0)
+        {
+            var audioSource = audioSourcePool.Dequeue();
+            audioSource.gameObject.SetActive(true);
+            return audioSource;
+        }
+        return CreateAudioSource();
     }
 
-    public void AdjustSeVolume(float newValue)
+    private IEnumerator PlayAndRecycle(AudioSource audioSource, float delay)
     {
-        seVolume = newValue;
-        UpdateVolume(SoundType.SE);
-    }
-
-    public void AdjustVoiceVolume(float newValue)
-    {
-        voiceVolume = newValue;
-        UpdateVolume(SoundType.Voice);
+        audioSource.PlayOneShot(audioSource.clip);
+        yield return new WaitForSeconds(delay);
+        audioSource.Stop();
+        audioSource.clip = null;
+        audioSource.gameObject.SetActive(false);
+        audioSourcePool.Enqueue(audioSource);
     }
 
     private void SetVolume(AudioSource audioSource, SoundData soundData)
@@ -126,26 +114,5 @@ public class SoundSystem : MonoBehaviour
             _ => 1.0f
         };
         audioSource.volume = masterVolume * categoryVolume * soundData.volume;
-    }
-
-    private void UpdateVolumes()
-    {
-        foreach (var soundData in soundDataList)
-        {
-            var audioSource = audioSources[soundData.soundType];
-            SetVolume(audioSource, soundData);
-        }
-    }
-
-    private void UpdateVolume(SoundType type)
-    {
-        foreach (var soundData in soundDataList)
-        {
-            if (soundData.soundType == type)
-            {
-                var audioSource = audioSources[soundData.soundType];
-                SetVolume(audioSource, soundData);
-            }
-        }
     }
 }
