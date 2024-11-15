@@ -23,6 +23,8 @@ public class GameManager : MonoBehaviour
     public int playerScore = 0;
     public int groundScore = 0;
 
+    private bool isFirstBoot = true;
+
     [SerializeField]
     private SnowParticlesManager snowParticlesManager;
     [SerializeField]
@@ -42,9 +44,27 @@ public class GameManager : MonoBehaviour
 
 
 
+    public void ButtonToStory()
+    {
+        uIManager.StartScreen(false);
+        uIManager.StoryScreen(true);
+    }
+
     public void ButtonGameStart()
     {
+        uIManager.StoryScreen(false);
         StartCoroutine(GameLoop());
+    }
+
+    public void ButtonReturnStart()
+    {
+        uIManager.EndScreen(false);
+        playerController.gameObject.SetActive(false);
+
+        DisableGame();
+        snowParticlesManager.gameObject.SetActive(false);
+        InitGame();
+        uIManager.StartScreen(true);
     }
 
     public void ButtonGameRestart()
@@ -64,6 +84,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GameStarting()
     {
+        playerController.gameObject.SetActive(true);
         DisableGame();
 
         uIManager.StartScreen(false);
@@ -84,16 +105,22 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GameEnding()
     {
-        uIManager.EndScreen(true);
+        if (isFirstBoot)
+        {
+            uIManager.CreditScreen(true);
+            isFirstBoot = false;
+        }
+        else
+        {
+            uIManager.EndScreen(true);
+        }
         UnityroomApiClient.Instance.SendScore(1, (float)playerScore, ScoreboardWriteMode.HighScoreDesc);
         DisableGame();
-
         yield return null;
     }
 
     private void InitGame()
     {
-        SoundSystem.instance.PlaySound("aiu");
         groundController.ResetParameter();
         playerController.ResetParameter();
         playerScore = 0;
@@ -117,6 +144,7 @@ public class GameManager : MonoBehaviour
     private void DisableGame()
     {
         snowParticlesManager.PauseParticles();
+        if (playerController.gameObject.activeSelf == false) return;
         playerController.MoveAnim(false);
         playerController.FrontAnim(true);
         playerController.enabled = false;

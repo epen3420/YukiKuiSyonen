@@ -112,6 +112,7 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
 
     public void AddSnowPoint(int playerPoint, int groundPoint)
     {
+        SoundSystem.instance.PlaySound("EatSnow");
         earnedPoints += playerPoint;
         float slowSpeed = (float)groundPoint / GameManager.instance.maxPoint;
         moveSpeed -= slowSpeed;

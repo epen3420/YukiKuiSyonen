@@ -8,7 +8,11 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private GameObject startPanel;
     [SerializeField]
+    private GameObject storyPanel;
+    [SerializeField]
     private GameObject endPanel;
+    [SerializeField]
+    private GameObject creditPanel;
     [SerializeField]
     private GameObject countDownField;
     [SerializeField]
@@ -24,6 +28,17 @@ public class UIManager : MonoBehaviour
     public void StartScreen(bool isScreen)
     {
         startPanel.SetActive(isScreen);
+    }
+
+    public void StoryScreen(bool isScreen)
+    {
+        storyPanel.SetActive(isScreen);
+    }
+
+    public void CreditScreen(bool isScreen)
+    {
+        creditPanel.SetActive(isScreen);
+        EndScreen(!isScreen);
     }
 
     public void EndScreen(bool isScreen)
