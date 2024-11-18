@@ -23,8 +23,6 @@ public class GameManager : MonoBehaviour
     public int playerScore = 0;
     public int groundScore = 0;
 
-    private bool isFirstBoot = true;
-
     [SerializeField]
     private SnowParticlesManager snowParticlesManager;
     [SerializeField]
@@ -38,39 +36,22 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         SoundSystem.instance.PlaySound("Yuki");
-        uIManager.StartScreen(true);
+        uIManager.HideAllPanel();
+        uIManager.SwitchPanel("Start");
         DisableGame();
-    }
-
-
-
-    public void ButtonToStory()
-    {
-        uIManager.StartScreen(false);
-        uIManager.StoryScreen(true);
     }
 
     public void ButtonGameStart()
     {
-        uIManager.StoryScreen(false);
         StartCoroutine(GameLoop());
     }
 
     public void ButtonReturnStart()
     {
-        uIManager.EndScreen(false);
-        playerController.gameObject.SetActive(false);
+        uIManager.SwitchPanel("Start");
 
-        DisableGame();
         snowParticlesManager.gameObject.SetActive(false);
         InitGame();
-        uIManager.StartScreen(true);
-    }
-
-    public void ButtonGameRestart()
-    {
-        uIManager.EndScreen(false);
-        StartCoroutine(GameLoop());
     }
 
     private IEnumerator GameLoop()
@@ -84,12 +65,11 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GameStarting()
     {
-        playerController.gameObject.SetActive(true);
         DisableGame();
-
-        uIManager.StartScreen(false);
-        yield return uIManager.CountDown(3);
+        yield return uIManager.ShowCountDownPanel(3);
+        uIManager.HideAllPanel();
         InitGame();
+        yield return null;
     }
 
     private IEnumerator GamePlaying()
@@ -105,15 +85,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GameEnding()
     {
-        if (isFirstBoot)
-        {
-            uIManager.CreditScreen(true);
-            isFirstBoot = false;
-        }
-        else
-        {
-            uIManager.EndScreen(true);
-        }
+        uIManager.SwitchPanel("End");
         UnityroomApiClient.Instance.SendScore(1, (float)playerScore, ScoreboardWriteMode.HighScoreDesc);
         DisableGame();
         yield return null;
@@ -144,7 +116,6 @@ public class GameManager : MonoBehaviour
     private void DisableGame()
     {
         snowParticlesManager.PauseParticles();
-        if (playerController.gameObject.activeSelf == false) return;
         playerController.MoveAnim(false);
         playerController.FrontAnim(true);
         playerController.enabled = false;

@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     private float horizontalInput = 0.0f;
     private int earnedPoints = 0;
     private Vector2 initPos = new Vector2(-2.0f, -2.88f);
+    private Vector3 initScale = Vector3.one;
 
     [Header("動く速さ")]
     [Range(0.0f, 10.0f)]
@@ -117,7 +118,6 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         float slowSpeed = (float)groundPoint / GameManager.instance.maxPoint;
         moveSpeed -= slowSpeed;
         GameManager.instance.playerScore = earnedPoints;
-        Debug.Log($"Player earned point: {earnedPoints}");
     }
 
     public void ResetParameter()
@@ -127,5 +127,6 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         earnedPoints = 0;
         horizontalInput = 0;
         transform.position = initPos;
+        transform.localScale = initScale;
     }
 }

@@ -1,49 +1,52 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
     [SerializeField]
-    private GameObject startPanel;
-    [SerializeField]
-    private GameObject storyPanel;
-    [SerializeField]
-    private GameObject endPanel;
-    [SerializeField]
-    private GameObject creditPanel;
-    [SerializeField]
-    private GameObject countDownField;
-    [SerializeField]
-    private TextMeshProUGUI countDownText;
+    private CountDown countDown;
     [SerializeField]
     private TextMeshProUGUI pointsCountText;
     [SerializeField]
     private TMP_InputField inputField;
     [SerializeField]
     private TextMeshProUGUI userNameText;
+    [SerializeField]
+    private List<GameObject> panels = new List<GameObject>();
 
 
-    public void StartScreen(bool isScreen)
+    public void SwitchPanel(string showPanel)
     {
-        startPanel.SetActive(isScreen);
+        showPanel += "Panel";
+        for (int i = 0; i < panels.Count; i++)
+        {
+            if (showPanel == panels[i].name)
+            {
+                panels[i].SetActive(true);
+            }
+            else
+            {
+                panels[i].SetActive(false);
+            }
+        }
+        Debug.Log($"Switched to {showPanel}");
     }
 
-    public void StoryScreen(bool isScreen)
+    public IEnumerator ShowCountDownPanel(int count)
     {
-        storyPanel.SetActive(isScreen);
+        countDown.gameObject.SetActive(true);
+        yield return countDown.CountDownOnScreen(count);
     }
 
-    public void CreditScreen(bool isScreen)
+    public void HideAllPanel()
     {
-        creditPanel.SetActive(isScreen);
-        EndScreen(!isScreen);
-    }
-
-    public void EndScreen(bool isScreen)
-    {
-        endPanel.SetActive(isScreen);
+        for (int i = 0; i < panels.Count; i++)
+        {
+            panels[i].SetActive(false);
+        }
+        Debug.Log("Finished hiding all panels");
     }
 
     public void SetUserName()
@@ -55,18 +58,5 @@ public class UIManager : MonoBehaviour
     public void ReflectCount(int points)
     {
         pointsCountText.text = $"{points}";
-    }
-
-    public IEnumerator CountDown(int count)
-    {
-        countDownField.SetActive(true);
-        for (int i = 0; i < count; i++)
-        {
-            countDownText.text = $"{count - i}";
-            yield return new WaitForSeconds(1.0f);
-        }
-        countDownText.text = "Start!!";
-        yield return new WaitForSeconds(1.0f);
-        countDownField.SetActive(false);
     }
 }
