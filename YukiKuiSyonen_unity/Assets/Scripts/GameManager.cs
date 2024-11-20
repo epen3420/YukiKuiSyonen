@@ -19,9 +19,33 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public int maxPoint = 100;
-    public int playerScore = 0;
-    public int groundScore = 0;
+    [Header("最大の積雪量")]
+    [SerializeField]
+    private int maxPoint = 100;
+    public int MaxPoint
+    {
+        get { return maxPoint; }
+    }
+
+    private int groundScore = 0;
+    public int GroundScore
+    {
+        get { return groundScore; }
+        set
+        {
+            groundScore += value;
+            Debug.Log($"Ground snow count: {groundScore}/{maxPoint}");
+
+            float ratio = (float)groundScore / maxPoint;
+            playerController.SlowSpeed(ratio);
+        }
+    }
+    private int playerScore = 0;
+    public int PlayerScore
+    {
+        get { return playerScore; }
+        set { playerScore += value; }
+    }
 
     [SerializeField]
     private SnowParticlesManager snowParticlesManager;
@@ -102,7 +126,11 @@ public class GameManager : MonoBehaviour
 
     private bool IsGameOver()
     {
-        return groundController.IsPiledUp;
+        if (maxPoint <= groundScore)
+        {
+            return true;
+        }
+        return false;
     }
 
     private void EnableGame()

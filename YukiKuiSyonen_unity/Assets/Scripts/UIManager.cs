@@ -46,7 +46,7 @@ public class UIManager : MonoBehaviour
         {
             panels[i].SetActive(false);
         }
-        Debug.Log("Finished hiding all panels");
+        Debug.Log("Hided all panels");
     }
 
     public void SetUserName()

@@ -6,15 +6,24 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     private Animator anim;
     private float moveRange = 0.0f;
     private float horizontalInput = 0.0f;
-    private int earnedPoints = 0;
     private Vector2 initPos = new Vector2(-2.0f, -2.88f);
     private Vector3 initScale = Vector3.one;
+    private float currentSpeed = 0.0f;
 
-    [Header("動く速さ")]
+    [Header("通常の速さ")]
     [Range(0.0f, 10.0f)]
     [SerializeField]
-    private float moveSpeed = 2.0f;
+    private float baseSpeed = 2.0f;
+    [Header("最小の速さ")]
+    [Range(0.0f, 10.0f)]
+    [SerializeField]
+    private float minSpeed = 1.0f;
 
+
+    public void SlowSpeed(float ratio)
+    {
+        currentSpeed = Mathf.Lerp(baseSpeed, minSpeed, ratio);
+    }
     private void Awake()
     {
         anim = GetComponent<Animator>();
@@ -29,7 +38,7 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     private void MovePlayer()
     {
         Vector3 currentPos = transform.position;
-        currentPos.x += horizontalInput * moveSpeed * Time.deltaTime;
+        currentPos.x += horizontalInput * currentSpeed * Time.deltaTime;
         currentPos.x = Mathf.Clamp(currentPos.x, -moveRange, moveRange);
         transform.position = currentPos;
 
@@ -101,7 +110,7 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
 
     private void FootStepSound()
     {
-        if (GameManager.instance.groundScore > 0)
+        if (GameManager.instance.GroundScore > 0)
         {
             SoundSystem.instance.PlaySound("WalkSnow");
         }
@@ -114,19 +123,15 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     public void AddSnowPoint(int playerPoint, int groundPoint)
     {
         SoundSystem.instance.PlaySound("EatSnow");
-        earnedPoints += playerPoint;
-        float slowSpeed = (float)groundPoint / GameManager.instance.maxPoint;
-        moveSpeed -= slowSpeed;
-        GameManager.instance.playerScore = earnedPoints;
+        GameManager.instance.PlayerScore = playerPoint;
     }
 
     public void ResetParameter()
     {
         MoveAnim(false);
-        moveSpeed = 2.0f;
-        earnedPoints = 0;
         horizontalInput = 0;
         transform.position = initPos;
         transform.localScale = initScale;
+        currentSpeed = baseSpeed;
     }
 }

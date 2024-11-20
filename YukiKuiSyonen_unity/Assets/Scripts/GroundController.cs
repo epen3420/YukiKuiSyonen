@@ -7,12 +7,6 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
     private Vector2 initPos = new Vector2(0.0f, -725.0f);
     private float pointPerPileUpSnow = 0.0f;
     private int pileUpLimiter = 0;
-    private int groundSnowCount = 0;
-    private bool isPiledUp = false;
-    public bool IsPiledUp
-    {
-        get { return isPiledUp; }
-    }
 
     [Header("積もるポイントの頻度")]
     [SerializeField]
@@ -21,7 +15,7 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
 
     private void Start()
     {
-        pointPerPileUpSnow = (maxPileUpHeight - minPileUpHeight) / GameManager.instance.maxPoint;
+        pointPerPileUpSnow = (maxPileUpHeight - minPileUpHeight) / GameManager.instance.MaxPoint;
         pileUpLimiter = pointPerPileUp;
     }
 
@@ -43,22 +37,14 @@ public class GroundController : MonoBehaviour, ISnowAccumulation
     public void AddSnowPoint(int playerPoint, int groundPoint)
     {
         SoundSystem.instance.PlaySound("HitGround");
-        groundSnowCount += groundPoint;
-        GameManager.instance.groundScore = groundSnowCount;
+        GameManager.instance.GroundScore = groundPoint;
         UpdatePileUp(groundPoint);
 
-        if (GameManager.instance.maxPoint <= groundSnowCount)
-        {
-            isPiledUp = true;
-        }
-        Debug.Log($"Ground snow count: {groundSnowCount}");
     }
 
     public void ResetParameter()
     {
-        isPiledUp = false;
         pileUpLimiter = pointPerPileUp;
-        groundSnowCount = 0;
         transform.localPosition = initPos;
     }
 }
