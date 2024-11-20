@@ -7,7 +7,7 @@
             "actions": [
                 {
                     "name": "KeyMove",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "5a0ec3ec-b342-4731-ac03-84c1853c8332",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -16,7 +16,7 @@
                 },
                 {
                     "name": "DragMove",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "ba86286e-03c8-47e0-a746-1316ecc60734",
                     "expectedControlType": "Vector2",
                     "processors": "",
