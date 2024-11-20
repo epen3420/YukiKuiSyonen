@@ -9,6 +9,9 @@ public class SnowParticlesManager : MonoBehaviour
         GetSnowParticleSystem();
     }
 
+    /// <summary>
+    /// すべてのParticleSystemを中断する関数
+    /// </summary>
     public void PauseParticles()
     {
         for (int i = 0; i < particleSystems.Length; i++)
@@ -17,6 +20,9 @@ public class SnowParticlesManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// ParticleSystemを取得する
+    /// </summary>
     private void GetSnowParticleSystem()
     {
         int childCount = transform.childCount;

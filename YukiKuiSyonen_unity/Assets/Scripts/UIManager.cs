@@ -6,17 +6,18 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     [SerializeField]
+    private List<GameObject> panels = new List<GameObject>();
+    [SerializeField]
     private CountDown countDown;
+    [Header("プレイヤーのポイントを表示するTMP_Text")]
     [SerializeField]
     private TextMeshProUGUI pointsCountText;
-    [SerializeField]
-    private TMP_InputField inputField;
-    [SerializeField]
-    private TextMeshProUGUI userNameText;
-    [SerializeField]
-    private List<GameObject> panels = new List<GameObject>();
 
 
+    /// <summary>
+    /// showPanel以外のPanelを非表示にする関数
+    /// </summary>
+    /// <param name="showPanel"></param>
     public void SwitchPanel(string showPanel)
     {
         showPanel += "Panel";
@@ -34,12 +35,20 @@ public class UIManager : MonoBehaviour
         Debug.Log($"Switched to {showPanel}");
     }
 
+    /// <summary>
+    /// CountDownを起動する関数
+    /// </summary>
+    /// <param name="count"></param>
+    /// <returns></returns>
     public IEnumerator ShowCountDownPanel(int count)
     {
         countDown.gameObject.SetActive(true);
         yield return countDown.CountDownOnScreen(count);
     }
 
+    /// <summary>
+    /// Panelをすべて非表示にする
+    /// </summary>
     public void HideAllPanel()
     {
         for (int i = 0; i < panels.Count; i++)
@@ -49,12 +58,10 @@ public class UIManager : MonoBehaviour
         Debug.Log("Hided all panels");
     }
 
-    public void SetUserName()
-    {
-        string userName = inputField.text;
-        userNameText.text = userName;
-    }
-
+    /// <summary>
+    /// プレイヤーの取得したポイントを反映させる関数
+    /// </summary>
+    /// <param name="points"></param>
     public void ReflectCount(int points)
     {
         pointsCountText.text = $"{points}";

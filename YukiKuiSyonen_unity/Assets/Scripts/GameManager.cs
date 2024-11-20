@@ -19,14 +19,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    [Header("最大の積雪量")]
-    [SerializeField]
-    private int maxPoint = 100;
-    public int MaxPoint
-    {
-        get { return maxPoint; }
-    }
-
     private int groundScore = 0;
     public int GroundScore
     {
@@ -44,7 +36,11 @@ public class GameManager : MonoBehaviour
     public int PlayerScore
     {
         get { return playerScore; }
-        set { playerScore += value; }
+        set
+        {
+            playerScore += value;
+            uIManager.ReflectCount(playerScore);
+        }
     }
 
     [SerializeField]
@@ -55,6 +51,13 @@ public class GameManager : MonoBehaviour
     private GroundController groundController;
     [SerializeField]
     private UIManager uIManager;
+    [Header("最大の積雪量")]
+    [SerializeField]
+    private int maxPoint = 100;
+    public int MaxPoint
+    {
+        get { return maxPoint; }
+    }
 
 
     private void Start()
@@ -102,7 +105,6 @@ public class GameManager : MonoBehaviour
 
         while (!IsGameOver())
         {
-            uIManager.ReflectCount(playerScore);
             yield return null;
         }
     }

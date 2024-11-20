@@ -2,8 +2,13 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// カウントダウンを表示するスクリプト
+/// コルーチンで始めないと動作しません
+/// </summary>
 public class CountDown : MonoBehaviour
 {
+    [Header("カウントダウンするTMP_Text")]
     [SerializeField]
     private TextMeshProUGUI countDownText;
 
@@ -17,6 +22,6 @@ public class CountDown : MonoBehaviour
         }
         countDownText.text = "Start!!";
         yield return new WaitForSeconds(1.0f);
-        gameObject.SetActive(false);
+        this.gameObject.SetActive(false);
     }
 }

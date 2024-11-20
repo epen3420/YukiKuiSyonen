@@ -1,13 +1,17 @@
 using UnityEngine;
 
+/// <summary>
+/// シーンビュー上に2Dのコライダーを可視化するスクリプト
+/// </summary>
 [RequireComponent(typeof(Collider2D))]
 public class Collider2DVisualizer : MonoBehaviour
 {
+    [Header("コライダーの範囲の色")]
     [SerializeField]
-    private Color gizmoColor = Color.green; // コライダーの範囲の色
+    private Color gizmoColor = Color.green;
 
 
-    void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
         Gizmos.color = gizmoColor;
 

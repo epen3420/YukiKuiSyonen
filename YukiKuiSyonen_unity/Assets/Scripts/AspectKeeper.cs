@@ -1,11 +1,16 @@
 using UnityEngine;
 
+/// <summary>
+/// アスペクト比を保つためのスクリプト
+/// </summary>
 public class AspectKeeper : MonoBehaviour
 {
+    [Header("対象とするカメラ")]
     [SerializeField]
-    private Camera targetCamera; //対象とするカメラ
+    private Camera targetCamera;
+    [Header("目的解像度")]
     [SerializeField]
-    private Vector2 aspectVec; //目的解像度
+    private Vector2 aspectVec;
 
 
     void Update()

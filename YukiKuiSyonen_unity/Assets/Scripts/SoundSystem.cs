@@ -46,6 +46,9 @@ public class SoundSystem : MonoBehaviour
         InitializeAudioSourcePool(10); // 初期プールサイズ
     }
 
+    /// <summary>
+    /// SoundDataのDictionaryを初期化する関数
+    /// </summary>
     private void InitializeSoundDataDictionary()
     {
         soundDataDict = new Dictionary<string, SoundData>();
@@ -53,6 +56,10 @@ public class SoundSystem : MonoBehaviour
             soundDataDict[soundData.title] = soundData;
     }
 
+    /// <summary>
+    /// AudioSourceのPoolを初期化する関数
+    /// </summary>
+    /// <param name="initialSize"></param>
     private void InitializeAudioSourcePool(int initialSize)
     {
         audioSourcePool = new Queue<AudioSource>();
@@ -60,6 +67,10 @@ public class SoundSystem : MonoBehaviour
             audioSourcePool.Enqueue(CreateAudioSource());
     }
 
+    /// <summary>
+    /// titleを指定して音源を流す関数
+    /// </summary>
+    /// <param name="title"></param>
     public void PlaySound(string title)
     {
         if (soundDataDict.TryGetValue(title, out var soundData))
@@ -76,6 +87,10 @@ public class SoundSystem : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// AudioSourceを生成する関数
+    /// </summary>
+    /// <returns></returns>
     private AudioSource CreateAudioSource()
     {
         var audioSourceObject = new GameObject("PooledAudioSource");
@@ -83,6 +98,10 @@ public class SoundSystem : MonoBehaviour
         return audioSourceObject.AddComponent<AudioSource>();
     }
 
+    /// <summary>
+    /// AudioSourceを取得する関数
+    /// </summary>
+    /// <returns></returns>
     private AudioSource GetOrCreateAudioSource()
     {
         if (audioSourcePool.Count > 0)
@@ -94,6 +113,12 @@ public class SoundSystem : MonoBehaviour
         return CreateAudioSource();
     }
 
+    /// <summary>
+    /// AudioSourceのPoolの処理をする関数
+    /// </summary>
+    /// <param name="audioSource"></param>
+    /// <param name="delay"></param>
+    /// <returns></returns>
     private IEnumerator PlayAndRecycle(AudioSource audioSource, float delay)
     {
         audioSource.PlayOneShot(audioSource.clip);
@@ -104,6 +129,11 @@ public class SoundSystem : MonoBehaviour
         audioSourcePool.Enqueue(audioSource);
     }
 
+    /// <summary>
+    /// 音量を設定する関数
+    /// </summary>
+    /// <param name="audioSource"></param>
+    /// <param name="soundData"></param>
     private void SetVolume(AudioSource audioSource, SoundData soundData)
     {
         float categoryVolume = soundData.soundType switch
