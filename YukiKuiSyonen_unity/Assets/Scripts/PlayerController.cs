@@ -7,7 +7,8 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     private float moveRange = 0.0f; // プレイヤーが動ける範囲
     private float horizontalInput = 0.0f; // 水平方向の入力
     private float currentSpeed = 0.0f; // プレイヤーの現在の速さ
-    private Vector2 initPos = new Vector2(-2.0f, -2.88f); // 初期座標
+    private float initXPos = -2.0f;
+    private Vector2 initPos;
     private Vector3 initScale = Vector3.one; // 初期スケール
 
     [Header("通常の速さ")]
@@ -24,6 +25,8 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     {
         anim = GetComponent<Animator>();
         moveRange = GetMoveRange();
+
+        initPos = new Vector2(initXPos, transform.position.y);
     }
 
     private void FixedUpdate()
