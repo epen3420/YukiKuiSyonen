@@ -1,0 +1,195 @@
+name: Unity Build (Windows/WebGL)
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_target_name:
+        description: 'Choose Windows, WebGL'
+        required: true
+        type: choice
+        options:
+          - Windows
+          - WebGL
+        default: 'Windows'
+
+  workflow_call:
+    inputs:
+      build_target_name:
+        description: 'Choose Windows, WebGL or For_GitHub_Pages'
+        required: true
+        type: string
+
+    secrets:
+      UNITY_EMAIL:
+        required: true
+      UNITY_PASSWORD:
+        required: true
+      UNITY_LICENSE:
+        required: true
+      UNIGAS_IS_ENABLE:
+        required: false
+      UNIGAS_DEPLOY_ID:
+        required: false
+      UNIGAS_AUTH_TOKEN:
+        required: false
+      UNIGAS_SHEET_ID:
+        required: false
+
+    # 生成したアーティファクト名を出力
+    outputs:
+      artifact_name:
+        description: "The name of the build artifact"
+        value: ${{ jobs.init.outputs.artifact_name }}
+
+jobs:
+  init:
+    name: Initialize before build
+    runs-on: ubuntu-latest
+
+    outputs:
+      artifact_name: ${{ steps.vars.outputs.artifact_name }}
+      build_target: ${{ steps.vars.outputs.build_target }}
+      custom_parameters: ${{ steps.customParameters.outputs.customParameters }}
+
+    steps:
+      - name: Validate Secrets
+        run: |
+          required_secrets=("UNITY_EMAIL" "UNITY_PASSWORD" "UNITY_LICENSE")
+          is_error=false
+          for secret in "${required_secrets[@]}"; do
+            if [ -z "${!secret}" ]; then
+              echo "::error::${secret}が設定されていません"
+              is_error=true
+            fi
+          done
+
+          if $is_error; then
+            exit 1
+          fi
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
+      # ビルドターゲットに応じて環境変数を設定
+      - name: Set Build Variables
+        id: vars
+        run: |
+          target="${{ inputs.build_target_name }}"
+          echo "Setting build variables based on input: $target"
+
+          case "$target" in
+            "Windows")
+              build_target="StandaloneWindows64"
+              ;;
+            "WebGL"|"For_GitHub_Pages")
+              build_target="WebGL"
+              ;;
+            *)
+              echo "::error::Invalid build_target_name: $target"
+              exit 1
+              ;;
+          esac
+
+          echo "build_target=$build_target" >> $GITHUB_OUTPUT
+
+
+          # ARTIFACT_NAME を設定
+          artifact_name="${{ inputs.build_target_name }}-Build-${{ github.run_id }}"
+          echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
+
+      - name: Set CustomParameters for unity-builder
+        id: customParameters
+        env:
+          UNIGAS_IS_ENABLE: ${{ secrets.UNIGAS_IS_ENABLE }}
+          UNIGAS_DEPLOY_ID: ${{ secrets.UNIGAS_DEPLOY_ID }}
+          UNIGAS_AUTH_TOKEN: ${{ secrets.UNIGAS_AUTH_TOKEN }}
+          UNIGAS_SHEET_ID: ${{ secrets.UNIGAS_SHEET_ID }}
+        run: |
+          custom_parameters=""
+          target_secrets=("UNIGAS_IS_ENABLE" "UNIGAS_DEPLOY_ID" "UNIGAS_AUTH_TOKEN" "UNIGAS_SHEET_ID")
+
+          for secret in "${target_secrets[@]}"; do
+            if [ -n "${!secret}" ]; then
+              custom_parameters="$custom_parameters -$secret ${!secret}"
+            fi
+          done
+
+          custom_parameters=$(echo $custom_parameters | xargs)
+          echo "customParameters=$custom_parameters" >> $GITHUB_OUTPUT
+
+  build:
+    name: Run the build for ${{ inputs.build_target_name }}
+    runs-on: ubuntu-latest
+    needs: init
+    env:
+      ARTIFACT_NAME: ${{ needs.init.outputs.artifact_name }}
+      BUILD_TARGET_NAME: ${{ inputs.build_target_name }}
+      BUILD_TARGET: ${{ needs.init.outputs.build_target }}
+      REPO_NAME: ${{ github.event.repository.name }}
+      CUSTOM_PARAMETERS: ${{ needs.init.outputs.custom_parameters }}
+
+    steps:
+      # 仮想環境にクローン
+      - name: Check out my unity project
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Unityビルドの前にランナーの空き容量を確保する
+      - name: Free Disk Space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          android: false # androidビルドするかもしれないし
+          docker-images: false # 元からdockerはない
+          tool-cache: false # 一番時間かかる(10倍くらい)
+          large-packages: false # 二番目に時間がかかる
+          swap-storage: true
+          dotnet: true
+          haskell: true
+
+      # 次回起動時の高速化ためライブラリをキャッシュ
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          # manifest.jsonかlock.jsonが変わったときだけキャッシュを更新
+          key: Library-${{ env.BUILD_TARGET }}-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
+          restore-keys: |
+            Library-${{ env.BUILD_TARGET }}-
+
+      - name: Change settings for github pages
+        if: env.BUILD_TARGET_NAME == 'For_GitHub_Pages'
+        run: |
+          sed -i -e 's/webGLCompressionFormat: ./webGLCompressionFormat: 2/' ProjectSettings/ProjectSettings.asset
+
+      # Unity ビルド実行
+      # 詳細の設定はUnity側で行えば良い
+      - name: Run the build
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          buildName: ${{ env.REPO_NAME }}
+          targetPlatform: ${{ env.BUILD_TARGET }}
+          allowDirtyBuild: true
+          customParameters: ${{ env.CUSTOM_PARAMETERS }}
+
+      # ビルド成果物をアップロード
+      - name: Upload the build for GitHub Pages
+        if: env.BUILD_TARGET_NAME == 'For_GitHub_Pages'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          name: github-pages
+          path: build/${{ env.BUILD_TARGET }}/${{ env.REPO_NAME }}
+          retention-days: 1
+
+      - name: Upload the Build
+        if: env.BUILD_TARGET_NAME != 'For_GitHub_Pages'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: build/${{ env.BUILD_TARGET }}
+          retention-days: 1

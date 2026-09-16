@@ -1,0 +1,55 @@
+name: Deploy to GitHub Pages
+
+on:
+  workflow_call:
+    outputs:
+      url:
+        value: ${{ jobs.deploy.outputs.page_url }}
+        description: "The URL of the deployed page"
+
+  workflow_dispatch: {}
+
+  push:
+    branches:
+      - main
+
+jobs:
+  build-webgl:
+    uses: ./.github/workflows/build-unity.yml
+    secrets: inherit
+    with:
+      build_target_name: For_GitHub_Pages
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-webgl
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  notify:
+    needs: deploy
+    name: Notify Discord on Complete
+    uses: ./.github/workflows/discord-notifier.yml
+    if: always()
+    secrets: inherit
+    with:
+      title: "🚀 GitHub Pages Deployment"
+      message: |
+        **リポジトリ:** ${{ github.repository }}
+        **結果:** **${{ needs.deploy.result }}**
+      status: ${{ needs.deploy.result }}
+      target_url: ${{ needs.deploy.outputs.page_url }}
