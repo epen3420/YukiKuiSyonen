@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour, ISnowAccumulation
+public class PlayerController : MonoBehaviour
 {
     private Animator anim;
     private Vector2 currentPointerPos;
@@ -121,6 +121,12 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     public void SetMoveAnim(int moveDirection)
     {
         anim.SetInteger("MoveDirection", moveDirection);
+
+        if (moveDirection == 0) return;
+
+        Vector2 scale = transform.GetChild(0).transform.localScale;
+        scale.x = moveDirection;
+        transform.GetChild(0).transform.localScale = scale;
     }
 
     /// <summary>
@@ -136,12 +142,6 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         {
             SoundSystem.instance.PlaySound("WalkGround");
         }
-    }
-
-    public void AddSnowPoint(int playerPoint, int groundPoint)
-    {
-        SoundSystem.instance.PlaySound("EatSnow");
-        GameManager.instance.PlayerScore = playerPoint;
     }
 
     public void ResetParameter()
