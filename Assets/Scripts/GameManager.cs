@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(this.gameObject);
+
+            Screen.SetResolution(900, 1600, FullScreenMode.Windowed);
         }
         else
         {
