@@ -4,8 +4,9 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour, ISnowAccumulation
 {
     private Animator anim;
+    private Vector2 currentPointerPos;
+    private int horizontalInput = 0; // 水平方向の入力
     private float moveRange = 0.0f; // プレイヤーが動ける範囲
-    private float horizontalInput = 0.0f; // 水平方向の入力
     private float currentSpeed = 0.0f; // プレイヤーの現在の速さ
     private float initXPos = -2.0f;
     private Vector2 initPos;
@@ -31,7 +32,15 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
 
     private void FixedUpdate()
     {
-        MovePlayer();
+        Vector3 currentPos = transform.position;
+        currentPos.x += horizontalInput * currentSpeed * Time.deltaTime;
+        currentPos.x = Mathf.Clamp(currentPos.x, -moveRange, moveRange);
+        transform.position = currentPos;
+
+        // if (horizontalInput != 0)
+        // {
+        //     transform.localScale = new Vector3(horizontalInput, 1, 1);
+        // }
     }
 
     /// <summary>
@@ -43,22 +52,6 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         Vector2 camRightEdge = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0));
         float spHalfWidth = 0;
         return camRightEdge.x - spHalfWidth;
-    }
-
-    /// <summary>
-    /// プレイヤーを動かす関数
-    /// </summary>
-    private void MovePlayer()
-    {
-        Vector3 currentPos = transform.position;
-        currentPos.x += horizontalInput * currentSpeed * Time.deltaTime;
-        currentPos.x = Mathf.Clamp(currentPos.x, -moveRange, moveRange);
-        transform.position = currentPos;
-
-        if (horizontalInput != 0)
-        {
-            transform.localScale = new Vector3(horizontalInput, 1, 1);
-        }
     }
 
     /// <summary>
@@ -78,46 +71,46 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
     {
         if (enabled == false) return;
 
-        switch (context.phase)
-        {
-            case InputActionPhase.Performed:
-                MoveAnim(true);
-                break;
-            case InputActionPhase.Canceled:
-                MoveAnim(false);
-                break;
-        }
+        horizontalInput = System.Math.Sign(context.ReadValue<Vector2>().x);
+        SetMoveAnim(horizontalInput);
+    }
 
-        horizontalInput = context.ReadValue<Vector2>().x;
+    public void OnMovePointer(InputAction.CallbackContext context)
+    {
+        currentPointerPos = context.ReadValue<Vector2>();
     }
 
     /// <summary>
     /// InputSystemより画面タップの入力を受け取る関数
     /// </summary>
     /// <param name="context"></param>
-    public void OnDrag(InputAction.CallbackContext context)
+    public void OnPressPointer(InputAction.CallbackContext context)
     {
         if (!enabled) return;
 
-        if (context.phase == InputActionPhase.Performed)
+        if (context.canceled)
         {
-            MoveAnim(true);
-            Vector2 touchPosition = context.ReadValue<Vector2>();
+            horizontalInput = 0;
+            SetMoveAnim(horizontalInput);
+            return;
+        }
 
-            if (touchPosition.x > Screen.width / 2)
-            {
-                horizontalInput = 1; // 右側入力
-            }
-            else
-            {
-                horizontalInput = -1; // 左側入力
-            }
-        }
-        else if (context.phase == InputActionPhase.Canceled)
+        float touchPositionX = currentPointerPos.x;
+        float screenWidthHalf = Screen.width / 2;
+
+        if (touchPositionX > screenWidthHalf)
         {
-            MoveAnim(false);
-            horizontalInput = 0; // 入力終了時にリセット
+            horizontalInput = 1; // 右側入力
         }
+        else if (touchPositionX < screenWidthHalf)
+        {
+            horizontalInput = -1; // 左側入力
+        }
+        else
+        {
+            horizontalInput = 0;
+        }
+        SetMoveAnim(horizontalInput);
     }
 
     public void FrontAnim(bool isFront)
@@ -125,9 +118,9 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
         anim.SetBool("IsStanding", isFront);
     }
 
-    public void MoveAnim(bool isMove)
+    public void SetMoveAnim(int moveDirection)
     {
-        anim.SetBool("IsMoving", isMove);
+        anim.SetInteger("MoveDirection", moveDirection);
     }
 
     /// <summary>
@@ -153,10 +146,10 @@ public class PlayerController : MonoBehaviour, ISnowAccumulation
 
     public void ResetParameter()
     {
-        MoveAnim(false);
         horizontalInput = 0;
         transform.position = initPos;
         transform.localScale = initScale;
         currentSpeed = baseSpeed;
+        SetMoveAnim(horizontalInput);
     }
 }

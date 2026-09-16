@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PlayerStandAnim
+  m_Name: PlayerMoveLeftAnim
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,7 +21,11 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: 170491783, guid: 91bfa0e09880e5c4f84c81c258abce4d, type: 3}
+      value: {fileID: 331208945, guid: 91bfa0e09880e5c4f84c81c258abce4d, type: 3}
+    - time: 0.33333334
+      value: {fileID: -2005998028, guid: 91bfa0e09880e5c4f84c81c258abce4d, type: 3}
+    - time: 0.6666667
+      value: {fileID: -1290540569, guid: 91bfa0e09880e5c4f84c81c258abce4d, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -44,13 +48,15 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: 170491783, guid: 91bfa0e09880e5c4f84c81c258abce4d, type: 3}
+    - {fileID: 331208945, guid: 91bfa0e09880e5c4f84c81c258abce4d, type: 3}
+    - {fileID: -2005998028, guid: 91bfa0e09880e5c4f84c81c258abce4d, type: 3}
+    - {fileID: -1290540569, guid: 91bfa0e09880e5c4f84c81c258abce4d, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.016666668
+    m_StopTime: 0.68333334
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -69,4 +75,18 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0
+    functionName: FootStepSound
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.6666667
+    functionName: FootStepSound
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
