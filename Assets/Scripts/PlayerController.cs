@@ -4,7 +4,6 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     private Animator anim;
-    private Vector2 currentPointerPos;
     private int horizontalInput = 0; // 水平方向の入力
     private const float moveRange = 2.81f; // プレイヤーが動ける範囲
     private float currentSpeed = 0.0f; // プレイヤーの現在の速さ
@@ -12,6 +11,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 initPos;
     private Vector3 initScale = Vector3.one; // 初期スケール
 
+    [SerializeField]
+    private InputActionReference positionAction;
     [Header("通常の速さ")]
     [Range(0.0f, 10.0f)]
     [SerializeField]
@@ -76,11 +77,6 @@ public class PlayerController : MonoBehaviour
         SetMoveAnim(horizontalInput);
     }
 
-    public void OnMovePointer(InputAction.CallbackContext context)
-    {
-        currentPointerPos = context.ReadValue<Vector2>();
-    }
-
     /// <summary>
     /// InputSystemより画面タップの入力を受け取る関数
     /// </summary>
@@ -96,6 +92,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        Vector2 currentPointerPos = positionAction.action.ReadValue<Vector2>();
         float touchPositionX = currentPointerPos.x;
         float screenWidthHalf = Screen.width / 2;
 
