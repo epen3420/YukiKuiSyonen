@@ -141,6 +141,7 @@ public class GameManager : MonoBehaviour
     {
         snowParticlesManager.gameObject.SetActive(false);
         snowParticlesManager.gameObject.SetActive(true);
+        playerController.ResetParameter();
         playerController.FrontAnim(false);
         playerController.enabled = true;
     }
@@ -148,7 +149,6 @@ public class GameManager : MonoBehaviour
     private void DisableGame()
     {
         snowParticlesManager.PauseParticles();
-        playerController.ResetParameter();
         playerController.FrontAnim(true);
         playerController.enabled = false;
     }
