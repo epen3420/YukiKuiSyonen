@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
     private Vector2 currentPointerPos;
     private int horizontalInput = 0; // 水平方向の入力
-    private float moveRange = 0.0f; // プレイヤーが動ける範囲
+    private const float moveRange = 2.81f; // プレイヤーが動ける範囲
     private float currentSpeed = 0.0f; // プレイヤーの現在の速さ
     private float initXPos = -2.0f;
     private Vector2 initPos;
@@ -25,7 +25,8 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         anim = GetComponent<Animator>();
-        moveRange = GetMoveRange();
+
+        Debug.Log(moveRange);
 
         initPos = new Vector2(initXPos, transform.position.y);
     }
