@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     private float initXPos = -2.0f;
     private Vector2 initPos;
     private Vector3 initScale = Vector3.one; // 初期スケール
+    private bool isPointerPressed = false;
 
     [SerializeField]
     private InputActionReference positionAction;
@@ -28,6 +29,29 @@ public class PlayerController : MonoBehaviour
         anim = GetComponent<Animator>();
 
         initPos = new Vector2(initXPos, transform.position.y);
+    }
+
+    private void Update()
+    {
+        if (!isPointerPressed) return;
+
+        Vector2 currentPointerPos = positionAction.action.ReadValue<Vector2>();
+        float touchPositionX = currentPointerPos.x;
+        float screenWidthHalf = Screen.width / 2;
+
+        if (touchPositionX > screenWidthHalf)
+        {
+            horizontalInput = 1; // 右側入力
+        }
+        else if (touchPositionX < screenWidthHalf)
+        {
+            horizontalInput = -1; // 左側入力
+        }
+        else
+        {
+            horizontalInput = 0;
+        }
+        SetMoveAnim(horizontalInput);
     }
 
     private void FixedUpdate()
@@ -71,26 +95,11 @@ public class PlayerController : MonoBehaviour
         {
             horizontalInput = 0;
             SetMoveAnim(horizontalInput);
+            isPointerPressed = false;
             return;
         }
 
-        Vector2 currentPointerPos = positionAction.action.ReadValue<Vector2>();
-        float touchPositionX = currentPointerPos.x;
-        float screenWidthHalf = Screen.width / 2;
-
-        if (touchPositionX > screenWidthHalf)
-        {
-            horizontalInput = 1; // 右側入力
-        }
-        else if (touchPositionX < screenWidthHalf)
-        {
-            horizontalInput = -1; // 左側入力
-        }
-        else
-        {
-            horizontalInput = 0;
-        }
-        SetMoveAnim(horizontalInput);
+        isPointerPressed = true;
     }
 
     public void FrontAnim(bool isFront)
