@@ -46,17 +46,6 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// 動ける範囲をカメラの横の大きさから算出し返す関数
-    /// </summary>
-    /// <returns></returns>
-    private float GetMoveRange()
-    {
-        Vector2 camRightEdge = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0));
-        float spHalfWidth = 0;
-        return camRightEdge.x - spHalfWidth;
-    }
-
-    /// <summary>
     /// プレイヤーの速さをratioの割合分遅くする
     /// </summary>
     /// <param name="ratio"></param>
