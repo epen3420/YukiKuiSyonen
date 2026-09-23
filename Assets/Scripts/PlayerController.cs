@@ -27,8 +27,6 @@ public class PlayerController : MonoBehaviour
     {
         anim = GetComponent<Animator>();
 
-        Debug.Log(moveRange);
-
         initPos = new Vector2(initXPos, transform.position.y);
     }
 
@@ -38,11 +36,6 @@ public class PlayerController : MonoBehaviour
         currentPos.x += horizontalInput * currentSpeed * Time.deltaTime;
         currentPos.x = Mathf.Clamp(currentPos.x, -moveRange, moveRange);
         transform.position = currentPos;
-
-        // if (horizontalInput != 0)
-        // {
-        //     transform.localScale = new Vector3(horizontalInput, 1, 1);
-        // }
     }
 
     /// <summary>
