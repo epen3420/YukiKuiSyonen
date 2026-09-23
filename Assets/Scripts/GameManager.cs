@@ -149,6 +149,7 @@ public class GameManager : MonoBehaviour
     {
         snowParticlesManager.PauseParticles();
         playerController.ResetParameter();
+        playerController.FrontAnim(true);
         playerController.enabled = false;
     }
 }
