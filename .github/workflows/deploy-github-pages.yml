@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy to Vercel
 
 on:
   workflow_call:
@@ -19,22 +19,25 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build-webgl
-
-    permissions:
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     outputs:
-      page_url: ${{ steps.deployment.outputs.page_url }}
+      page_url: ${{ steps.vercel.outputs.preview-url }}
 
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Download Unity Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          # 必要に応じて name: <artifact-name> を指定してください
+          path: ./path/to/your/unity/build
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        id: vercel
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./path/to/your/unity/build
+          vercel-args: '--prod'
 
   notify:
     needs: deploy
@@ -43,7 +46,7 @@ jobs:
     if: always()
     secrets: inherit
     with:
-      title: "🚀 GitHub Pages Deployment"
+      title: "🚀 Vercel Deployment"
       message: |
         **リポジトリ:** ${{ github.repository }}
         **結果:** **${{ needs.deploy.result }}**
