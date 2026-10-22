@@ -23,11 +23,13 @@ jobs:
       page_url: ${{ steps.vercel.outputs.preview-url }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download Unity Build Artifact
         uses: actions/download-artifact@v4
         with:
-          # 必要に応じて name: <artifact-name> を指定してください
-          path: ./path/to/your/unity/build
+          path: ./dist
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
@@ -36,7 +38,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./path/to/your/unity/build
+          working-directory: ./dist
           vercel-args: '--prod'
 
   notify:
